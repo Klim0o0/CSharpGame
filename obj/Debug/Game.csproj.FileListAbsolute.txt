@@ -1,0 +1,10 @@
+D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.csprojAssemblyReference.cache
+D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.Properties.Resources.resources
+D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.csproj.GenerateResource.cache
+D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.csproj.CoreCompileInputs.cache
+D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\Game.exe.config
+D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\Game.exe
+D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\Game.pdb
+D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.exe
+D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.pdb
+D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.MyForm.resources
