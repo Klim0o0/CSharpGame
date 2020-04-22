@@ -34,26 +34,43 @@ namespace Game
                     if (ray.B.X > 0 && ray.B.Y > 0)
                         args.Graphics.DrawLine(Pens.Blue, (float) ray.A.X, (float) ray.A.Y, (float) ray.B.X, (float) ray.B.Y);
                 }
-                args.Graphics.FillRectangle(Brushes.CornflowerBlue, 700,0, (float)Math.PI*200,300);
-                args.Graphics.FillRectangle(Brushes.Gray, 700,300, (float)Math.PI*200,300);
-                
+
+                args.Graphics.FillRectangle(Brushes.CornflowerBlue, 700, 0, (float) Math.PI * 200, 300);
+                args.Graphics.FillRectangle(Brushes.Gray, 700, 300, (float) Math.PI * 200, 300);
+
                 var ofset = 0.0f;
                 foreach (var ray in map.CastetReys.Values)
                 {
                     if (ray.B.X > 0 && ray.B.Y > 0)
                     {
-                        var h1 = d/ray.Length * h;
+                        var h1 = d / ray.Length * h;
                         h1 = h1 > 600 ? 600 : h1;
-                        args.Graphics.FillRectangle(Brushes.WhiteSmoke, 700+ofset,300-(float)h1/2, 2.5f,(float)h1);
+                        args.Graphics.FillRectangle(Brushes.WhiteSmoke, 700 + ofset, 300 - (float) h1 / 2, 2.5f, (float) h1);
                     }
-                    ofset += 2f;
 
+                    ofset += 2f;
                 }
-                
+
                 foreach (var wall in map.walls)
                 {
                     args.Graphics.DrawLine(Pens.Blue, (float) wall.A.X, (float) wall.A.Y, (float) wall.B.X, (float) wall.B.Y);
                 }
+            };
+
+            var a = 0;
+            MouseMove += (sender, args) =>
+            {
+                var g = a - args.X;
+                if (Math.Abs(g) > 3)
+                {
+                    if (g < 0)
+                        player.TurnRigth();
+                    else
+                        player.TurnLeft();
+                    a = args.X;
+                    Invalidate();
+                }
+
             };
 
             KeyDown += (sender, args) =>

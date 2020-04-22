@@ -12,7 +12,7 @@ namespace Game
         public float X { get; private set; }
         public float Y{get; private set;}
         private double rayStep = 0.005;
-        private float spead = 5;
+        private float spead = 3;
         public List<Ray> Rays { get; private set; }
         
         public double Direction{get; private set;}
