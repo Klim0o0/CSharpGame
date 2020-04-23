@@ -17,19 +17,23 @@ namespace Game
         {
             DoubleBuffered = true;
             ClientSize = new Size(1900, 1200);
-            var player = new Player(10, 10, 0);
+            var player = new Player(7, 7, 0);
             var map = new Map(player);
             var centerX = ClientSize.Width / 2;
             var centerY = ClientSize.Height / 2;
-            var h = 200;
-            var d = 100;
+            var h =100;
+            var d = 200;
+            
+            var bmp = new Bitmap(Image.FromFile("wall.png"));
 
             Paint += (sender, args) =>
             {
-                args.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                args.Graphics.FillRectangle(Brushes.White, 0, 0, ClientSize.Width,ClientSize.Height);
+                //args.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                 map.CastRays();
-                foreach (var ray in map.CastetReys.Values)
+                foreach (var tuple in map.CastetReys)
                 {
+                    var ray = tuple.Item1;
                     if (ray.B.X > 0 && ray.B.Y > 0)
                         args.Graphics.DrawLine(Pens.Blue, (float) ray.A.X, (float) ray.A.Y, (float) ray.B.X, (float) ray.B.Y);
                 }
@@ -37,40 +41,64 @@ namespace Game
                 args.Graphics.FillRectangle(Brushes.CornflowerBlue, 700, 0, (float) Math.PI * 200, 300);
                 args.Graphics.FillRectangle(Brushes.Gray, 700, 300, (float) Math.PI * 200, 300);
 
-                var ofset = 0.0f;
-                foreach (var ray in map.CastetReys.Values)
+                var ofset = 0;
+                var angle = -Math.PI / 4;
+
+                foreach (var tuple in map.CastetReys)
                 {
+                    var ray = tuple.Item1;
                     if (ray.B.X > 0 && ray.B.Y > 0)
                     {
-                        var h1 = d / ray.Length * h;
-                        h1 = h1 > 600 ? 600 : h1;
-                        args.Graphics.FillRectangle(Brushes.WhiteSmoke, 700 + ofset, 300 - (float) h1 / 2, 2.5f, (float) h1);
+                        var d1 = ray.Length;
+                        var h1 = d/d1*h;
+                        var h2 = h1 > 600 ? 600 : h1;
+                        var width = bmp.Width;
+                       var height = bmp.Height;
+                        var destinationRect = new RectangleF(
+                            700 + ofset,
+                            300 - (float) h1 / 2,
+                            2,
+                            
+                            (float) h1);
+
+                        var sourceRect = new RectangleF((int)Utils.GetDist(tuple.Item2.line.A,ray.B)%(bmp.Width-1),0, 1, height);
+                        args.Graphics.DrawImage(
+                           bmp,
+                           destinationRect,
+                           sourceRect,
+                          GraphicsUnit.Pixel);
+                          //var rec = new RectangleF(0+ofset,0, 0.4f*bmp.Width,0.4f*bmp.Height);
+                       
+                        //args.Graphics.DrawImage(bmp, 700 + ofset, 300 - (float) h1 / 2,rec , GraphicsUnit.Pixel);
+                        //args.Graphics.FillRectangle(Brushes.WhiteSmoke, 700 + ofset, 300 - (float) h1 / 2, 2.5f, (float) h1);
                     }
 
-                    ofset += 2f;
+                    ofset += 2;
+                    angle += player.rayStep;
                 }
-
+                args.Graphics.FillRectangle(Brushes.White, 700, 600, (float) Math.PI * 200+1, 800);
                 foreach (var wall in map.walls)
                 {
-                    args.Graphics.DrawLine(Pens.Blue, (float) wall.A.X, (float) wall.A.Y, (float) wall.B.X, (float) wall.B.Y);
+                    args.Graphics.DrawLine(Pens.Blue, (float) wall.line.A.X, (float) wall.line.A.Y, (float) wall.line.B.X, (float) wall.line.B.Y);
                 }
+                
+                
             };
             Cursor.Hide();
-            Cursor.Position= new Point((int)( Math.PI * 100+700),300);
-            var a = (int)( Math.PI * 100+700);
+            Cursor.Position = new Point((int) (Math.PI * 100 + 700), 300);
+            var a = (int) (Math.PI * 100 + 700);
             MouseMove += (sender, args) =>
             {
                 var g = a - args.X;
-                if (Math.Abs(g) >40)
+                if (Math.Abs(g) > 20)
                 {
                     if (g < 0)
                         player.TurnRigth();
                     else
                         player.TurnLeft();
-                    Cursor.Position= new Point((int)( Math.PI * 100+700),300);
+                    Cursor.Position = new Point((int) (Math.PI * 100 + 700), 300);
                     Invalidate();
                 }
-
             };
 
             KeyDown += (sender, args) =>

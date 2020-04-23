@@ -11,8 +11,9 @@ namespace Game
     {
         public float X { get; private set; }
         public float Y{get; private set;}
-        private double rayStep = 0.005;
+        public readonly double rayStep = 0.005;
         private float spead = 3;
+        public readonly double vsize =Math.PI / 4;
         public List<Ray> Rays { get; private set; }
         
         public double Direction{get; private set;}
@@ -22,7 +23,7 @@ namespace Game
             Y = y;
             Direction = direction;
             Rays= new List<Ray>();
-            for (var i = Direction-Math.PI/4; i < Direction+Math.PI/4; i += rayStep)
+            for (var i = Direction-vsize; i <= Direction+vsize; i += rayStep)
             {
                 Rays.Add(new Ray(new Vector(x, y ), i));
             }

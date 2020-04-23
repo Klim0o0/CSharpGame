@@ -18,11 +18,11 @@ namespace Game
             Pos = pos;
             Direction = new Vector(Math.Cos(direction),-Math.Sin(direction));
         }
-        public Vector Cast(Line line) {
-            var x1 = line.A.X;
-            var y1 = line.A.Y;
-            var x2 = line.B.X;
-            var y2 = line.B.Y;
+        public Vector Cast(Wall wall) {
+            var x1 = wall.line.A.X;
+            var y1 = wall.line.A.Y;
+            var x2 = wall.line.B.X;
+            var y2 = wall.line.B.Y;
 
             var x3 = Pos.X;
             var y3 = Pos.Y;
