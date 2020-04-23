@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Forms;
 using Size = System.Drawing.Size;
 
@@ -56,18 +55,19 @@ namespace Game
                     args.Graphics.DrawLine(Pens.Blue, (float) wall.A.X, (float) wall.A.Y, (float) wall.B.X, (float) wall.B.Y);
                 }
             };
-
-            var a = 0;
+            Cursor.Hide();
+            Cursor.Position= new Point((int)( Math.PI * 100+700),300);
+            var a = (int)( Math.PI * 100+700);
             MouseMove += (sender, args) =>
             {
                 var g = a - args.X;
-                if (Math.Abs(g) > 3)
+                if (Math.Abs(g) >40)
                 {
                     if (g < 0)
                         player.TurnRigth();
                     else
                         player.TurnLeft();
-                    a = args.X;
+                    Cursor.Position= new Point((int)( Math.PI * 100+700),300);
                     Invalidate();
                 }
 
