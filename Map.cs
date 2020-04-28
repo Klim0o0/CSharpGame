@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows;
 
 namespace Game
@@ -15,15 +16,16 @@ namespace Game
             this.player = player;
             CastetReys = new Tuple<Line,Wall>[player.Rays.Count];
             walls = new List<Wall>();
-            walls.Add(new Wall(new Line(new Vector(500, 200), new Vector(500, 400))));
-            walls.Add(new Wall(new Line(new Vector(600, 5), new Vector(600, 600))));
-            walls.Add(new Wall(new Line(new Vector(600, 600), new Vector(5, 600))));
-            walls.Add(new Wall(new Line(new Vector(5, 600), new Vector(5, 5))));
-            walls.Add(new Wall(new Line(new Vector(5, 5), new Vector(600, 5))));
+            var texture = Image.FromFile("wall.png");
+            walls.Add(new Wall(new Line(new Vector(500, 200), new Vector(500, 400)),texture));
+            walls.Add(new Wall(new Line(new Vector(600, 5), new Vector(600, 600)),texture));
+            walls.Add(new Wall(new Line(new Vector(600, 600), new Vector(5, 600)),texture));
+            walls.Add(new Wall(new Line(new Vector(5, 600), new Vector(5, 5)),texture));
+            walls.Add(new Wall(new Line(new Vector(5, 5), new Vector(600, 5)),texture));
             var random = new Random();
             for (var i = 0; i < 5; i++)
             {
-                walls.Add(new Wall(new Line(new Vector(random.Next(5, 600), random.Next(5, 600)), new Vector(random.Next(5, 600), random.Next(5, 600)))));
+                walls.Add(new Wall(new Line(new Vector(random.Next(5, 600), random.Next(5, 600)), new Vector(random.Next(5, 600), random.Next(5, 600))),texture));
             }
         }
 

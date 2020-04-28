@@ -16,20 +16,21 @@ namespace Game
         public MyForm()
         {
             DoubleBuffered = true;
+            var timer = new Timer();
+            timer.Interval = 10;
+            timer.Tick += (sender, args) => Invalidate();
+            timer.Start();
             ClientSize = new Size(1900, 1200);
             var player = new Player(7, 7, 0);
             var map = new Map(player);
             var centerX = ClientSize.Width / 2;
             var centerY = ClientSize.Height / 2;
-            var h =100;
+            var h = 100;
             var d = 200;
-            
-            var bmp = new Bitmap(Image.FromFile("wall.png"));
-
             Paint += (sender, args) =>
             {
-                args.Graphics.FillRectangle(Brushes.White, 0, 0, ClientSize.Width,ClientSize.Height);
-                //args.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                args.Graphics.FillRectangle(Brushes.White, 0, 0, ClientSize.Width, ClientSize.Height);
+                args.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                 map.CastRays();
                 foreach (var tuple in map.CastetReys)
                 {
@@ -43,32 +44,31 @@ namespace Game
 
                 var ofset = 0;
                 var angle = -Math.PI / 4;
-
                 foreach (var tuple in map.CastetReys)
                 {
                     var ray = tuple.Item1;
                     if (ray.B.X > 0 && ray.B.Y > 0)
                     {
                         var d1 = ray.Length;
-                        var h1 = d/d1*h;
+                        var h1 = d / d1 * h;
                         var h2 = h1 > 600 ? 600 : h1;
-                        var width = bmp.Width;
-                       var height = bmp.Height;
+                        var width =  tuple.Item2.Textures.Width;
+                        var height =  tuple.Item2.Textures.Height;
                         var destinationRect = new RectangleF(
                             700 + ofset,
                             300 - (float) h1 / 2,
-                            2,
-                            
+                            4,
                             (float) h1);
 
-                        var sourceRect = new RectangleF((int)Utils.GetDist(tuple.Item2.line.A,ray.B)%(bmp.Width-1),0, 1, height);
+                        var sourceRect = new RectangleF((int) Utils.GetDist(tuple.Item2.line.A, ray.B) % (width - 1), 0, 2, height);
+
                         args.Graphics.DrawImage(
-                           bmp,
-                           destinationRect,
-                           sourceRect,
-                          GraphicsUnit.Pixel);
-                          //var rec = new RectangleF(0+ofset,0, 0.4f*bmp.Width,0.4f*bmp.Height);
-                       
+                            tuple.Item2.Textures,
+                            destinationRect,
+                            sourceRect,
+                            GraphicsUnit.Pixel);
+                        //var rec = new RectangleF(0+ofset,0, 0.4f*bmp.Width,0.4f*bmp.Height);
+
                         //args.Graphics.DrawImage(bmp, 700 + ofset, 300 - (float) h1 / 2,rec , GraphicsUnit.Pixel);
                         //args.Graphics.FillRectangle(Brushes.WhiteSmoke, 700 + ofset, 300 - (float) h1 / 2, 2.5f, (float) h1);
                     }
@@ -76,13 +76,12 @@ namespace Game
                     ofset += 2;
                     angle += player.rayStep;
                 }
-                args.Graphics.FillRectangle(Brushes.White, 700, 600, (float) Math.PI * 200+1, 800);
+
+                args.Graphics.FillRectangle(Brushes.White, 700, 600, (float) Math.PI * 200 + 1, 800);
                 foreach (var wall in map.walls)
                 {
                     args.Graphics.DrawLine(Pens.Blue, (float) wall.line.A.X, (float) wall.line.A.Y, (float) wall.line.B.X, (float) wall.line.B.Y);
                 }
-                
-                
             };
             Cursor.Hide();
             Cursor.Position = new Point((int) (Math.PI * 100 + 700), 300);
@@ -97,7 +96,6 @@ namespace Game
                     else
                         player.TurnLeft();
                     Cursor.Position = new Point((int) (Math.PI * 100 + 700), 300);
-                    Invalidate();
                 }
             };
 
@@ -133,8 +131,6 @@ namespace Game
                 {
                     player.MoveRigth();
                 }
-
-                Invalidate();
             };
         }
     }
