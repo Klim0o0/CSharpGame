@@ -16,7 +16,7 @@ namespace Game
             this.player = player;
             CastetReys = new Tuple<Line,Wall>[player.Rays.Count];
             walls = new List<Wall>();
-            var texture = Image.FromFile("wall.png");
+            var texture = "wall";
             walls.Add(new Wall(new Line(new Vector(500, 200), new Vector(500, 400)),texture));
             walls.Add(new Wall(new Line(new Vector(600, 5), new Vector(600, 600)),texture));
             walls.Add(new Wall(new Line(new Vector(600, 600), new Vector(5, 600)),texture));

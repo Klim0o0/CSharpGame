@@ -5,11 +5,11 @@ namespace Game
     public class Wall
     {
         public readonly Line line;
-        public readonly Bitmap Textures;
-        public Wall(Line line,Image texture)
+        public readonly string Name;
+        public Wall(Line line,string name)
         {
             this.line = line;
-            Textures = new Bitmap(texture);
+            Name = name;
         }
         public Wall()
         {

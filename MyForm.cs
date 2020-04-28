@@ -20,6 +20,10 @@ namespace Game
             timer.Interval = 10;
             timer.Tick += (sender, args) => Invalidate();
             timer.Start();
+            
+            var textures = new Dictionary<string,Bitmap>();
+            textures.Add("wall", new Bitmap(Image.FromFile("wall.png")));
+            
             ClientSize = new Size(1900, 1200);
             var player = new Player(7, 7, 0);
             var map = new Map(player);
@@ -46,14 +50,15 @@ namespace Game
                 var angle = -Math.PI / 4;
                 foreach (var tuple in map.CastetReys)
                 {
+                    var bmp = textures[tuple.Item2.Name];
                     var ray = tuple.Item1;
                     if (ray.B.X > 0 && ray.B.Y > 0)
                     {
                         var d1 = ray.Length;
                         var h1 = d / d1 * h;
                         var h2 = h1 > 600 ? 600 : h1;
-                        var width =  tuple.Item2.Textures.Width;
-                        var height =  tuple.Item2.Textures.Height;
+                        var width =  bmp.Width;
+                        var height =  bmp.Height;
                         var destinationRect = new RectangleF(
                             700 + ofset,
                             300 - (float) h1 / 2,
@@ -63,7 +68,7 @@ namespace Game
                         var sourceRect = new RectangleF((int) Utils.GetDist(tuple.Item2.line.A, ray.B) % (width - 1), 0, 2, height);
 
                         args.Graphics.DrawImage(
-                            tuple.Item2.Textures,
+                            bmp,
                             destinationRect,
                             sourceRect,
                             GraphicsUnit.Pixel);
