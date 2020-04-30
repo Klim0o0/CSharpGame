@@ -9,82 +9,98 @@ namespace Game
 {
     public class Player
     {
-        public float X { get; private set; }
-        public float Y{get; private set;}
-        public readonly double rayStep = 0.005;
-        private float spead = 3;
-        public readonly double vsize =Math.PI / 4;
+        public float X { get; set; }
+        public float Y{get; set;}
+        public const double RayStep = 0.005;
+        private const float Speed = 3;
+        private readonly double vsize =Math.PI / 4;
         public List<Ray> Rays { get; private set; }
-        
-        public double Direction{get; private set;}
+        private double Direction{get; set;}
         public  Player(float x, float y, double direction)
         {
             X = x;
             Y = y;
             Direction = direction;
             Rays= new List<Ray>();
-            for (var i = Direction-vsize; i <= Direction+vsize; i += rayStep)
+            for (var i = Direction-vsize; i <= Direction+vsize; i += RayStep)
             {
                 Rays.Add(new Ray(new Vector(x, y ), i));
             }
         }
 
-        public void Move()
+        private void Move(Vector m, List<Wall> walls)
         {
-            for (var i = 0; i <Rays.Count; i++)
+            var f = m * Speed;
+            foreach (var wall in walls)
             {
-                Rays[i].Pos = new Vector(X, Y);
+                var t = new Vector(f.X,f.Y);
+                t.Normalize();
+                var r = new Ray(new Vector(X, Y), 0) {Direction = t};
+                var d = r.Cast(wall);
+                if (d.X >= 0 && d.Y >= 0&&f.Length> Utils.GetDist(new Vector(X,Y),d))
+                {
+                    var x1 = wall.line.A.X;
+                    var x2 = wall.line.B.X;
+                    var y1 = wall.line.A.Y;
+                    var y2 = wall.line.B.Y;
+                    var a = y2 - y1;
+                    var b = x1 - x2;
+                    var c = x1 * (y1 - y2) + y1 * (x2 - x1);
+                    var px = f.X + X;
+                    var py = f.Y + Y;
+                    var dist = Math.Abs(a * px + b * py + c) / Math.Sqrt(a * a + b * b)+0.5;
+                    var norm = new Vector(a,b);
+                    norm.Normalize();
+                    norm *= dist;
+                    if (norm.X * f.X+ norm.Y * f.Y>= 0)
+                        f -= norm;
+                    else
+                        f += norm;
+                    //return;
+                    //break;
+                }
             }
+
+
+            X += (float)f.X;
+            Y += (float)f.Y;
+            foreach (var ray in Rays)
+                ray.Pos = new Vector(X, Y);
         }
         public void TurnLeft()
         {
             Direction = (Direction - 0.05);
-            ChengeRays();
+            ChangeRays();
         }
-        public void TurnRigth()
+        public void TurnRight()
         {
             Direction = (Direction + 0.05);
-            ChengeRays();
+            ChangeRays();
         }
 
-        private void ChengeRays()
+        private void ChangeRays()
         {
-            for (double i = 0, j = Direction-Math.PI/4; i <Rays.Count; i++,j+=rayStep)
+            for (double i = 0, j = Direction-Math.PI/4; i <Rays.Count; i++,j+=RayStep)
             {
                 Rays[(int) i].Direction =new Vector(Math.Cos(j),-Math.Sin(j));
             }
         }
         
-        public void MoveForvard()
+        public void MoveForward( List<Wall> walls)
         {
-            var direction = new Vector(Math.Cos(Direction),-Math.Sin(Direction));
-            X += (float)direction.X * spead;
-            Y += (float)direction.Y * spead;
-            Move();
+            Move(new Vector(Math.Cos(Direction),-Math.Sin(Direction)),walls);
         }
-        public void MoveBeak()
+        public void MoveBeak( List<Wall> walls)
         {
-            var direction = new Vector(Math.Cos(Direction),-Math.Sin(Direction));
-            direction.Negate();
-            X += (float)direction.X * spead;
-            Y += (float)direction.Y * spead;
-            Move();
+            Move(new Vector(-Math.Cos(Direction),Math.Sin(Direction)),walls);
         }
-        public void MoveLeft()
+        public void MoveLeft( List<Wall> walls)
         {
-            var direction = new Vector(Math.Cos(Direction+Math.PI/2),-Math.Sin(Direction+Math.PI/2));
-            direction.Negate();
-            X += (float) direction.X * spead;
-            Y += (float)direction.Y * spead;
-            Move();
+            Move(new Vector(-Math.Cos(Direction+Math.PI/2),Math.Sin(Direction+Math.PI/2)),walls);
         }
-        public void MoveRigth()
+        public void MoveRight( List<Wall> walls)
         {
-            var direction = new Vector(Math.Cos(Direction+Math.PI/2),-Math.Sin(Direction+Math.PI/2));
-            
-            X += (float)direction.X * spead;
-            Y += (float) direction.Y * spead;
-            Move();
+            Move(new Vector(Math.Cos(Direction+Math.PI/2),-Math.Sin(Direction+Math.PI/2)),walls);
         }
     }
 }

@@ -16,10 +16,8 @@ namespace Game
         public MyForm()
         {
             DoubleBuffered = true;
-            var timer = new Timer();
-            timer.Interval = 10;
-            timer.Tick += (sender, args) => Invalidate();
-            timer.Start();
+            Cursor.Hide();
+            Cursor.Position = new Point((int) (Math.PI * 100 + 700), 300);
             
             var textures = new Dictionary<string,Bitmap>();
             textures.Add("wall", new Bitmap(Image.FromFile("wall.png")));
@@ -48,15 +46,14 @@ namespace Game
 
                 var ofset = 0;
                 var angle = -Math.PI / 4;
-                foreach (var tuple in map.CastetReys)
+                foreach (var (ray, item2) in map.CastetReys)
                 {
-                    var bmp = textures[tuple.Item2.Name];
-                    var ray = tuple.Item1;
                     if (ray.B.X > 0 && ray.B.Y > 0)
                     {
+                        var bmp = textures[item2.Name];
                         var d1 = ray.Length;
                         var h1 = d / d1 * h;
-                        var h2 = h1 > 600 ? 600 : h1;
+                        //h1 = h1 % 8000;
                         var width =  bmp.Width;
                         var height =  bmp.Height;
                         var destinationRect = new RectangleF(
@@ -65,7 +62,7 @@ namespace Game
                             4,
                             (float) h1);
 
-                        var sourceRect = new RectangleF((int) Utils.GetDist(tuple.Item2.line.A, ray.B) % (width - 1), 0, 2, height);
+                        var sourceRect = new RectangleF((int) Utils.GetDist(item2.line.A, ray.B) % (width -1), 0, 2, height);
 
                         args.Graphics.DrawImage(
                             bmp,
@@ -79,7 +76,7 @@ namespace Game
                     }
 
                     ofset += 2;
-                    angle += player.rayStep;
+                    angle += Player.RayStep;
                 }
 
                 args.Graphics.FillRectangle(Brushes.White, 700, 600, (float) Math.PI * 200 + 1, 800);
@@ -87,9 +84,15 @@ namespace Game
                 {
                     args.Graphics.DrawLine(Pens.Blue, (float) wall.line.A.X, (float) wall.line.A.Y, (float) wall.line.B.X, (float) wall.line.B.Y);
                 }
+                
+                args.Graphics.FillEllipse(Brushes.Aqua, new Rectangle((int)player.X-5,(int)player.Y-5,10,10));
             };
-            Cursor.Hide();
-            Cursor.Position = new Point((int) (Math.PI * 100 + 700), 300);
+            var timer = new Timer();
+            timer.Interval = 10;
+            timer.Tick += (sender, args) => Invalidate();
+            timer.Start();
+            
+            
             var a = (int) (Math.PI * 100 + 700);
             MouseMove += (sender, args) =>
             {
@@ -97,7 +100,7 @@ namespace Game
                 if (Math.Abs(g) > 20)
                 {
                     if (g < 0)
-                        player.TurnRigth();
+                        player.TurnRight();
                     else
                         player.TurnLeft();
                     Cursor.Position = new Point((int) (Math.PI * 100 + 700), 300);
@@ -108,7 +111,7 @@ namespace Game
             {
                 if (args.KeyCode == Keys.Right)
                 {
-                    player.TurnRigth();
+                    player.TurnRight();
                 }
 
                 if (args.KeyCode == Keys.Left)
@@ -118,23 +121,23 @@ namespace Game
 
                 if (args.KeyCode == Keys.W)
                 {
-                    player.MoveForvard();
+                    player.MoveForward(map.walls);
                 }
 
                 if (args.KeyCode == Keys.S)
                 {
-                    player.MoveBeak();
+                    player.MoveBeak(map.walls);
                     Invalidate();
                 }
 
                 if (args.KeyCode == Keys.A)
                 {
-                    player.MoveLeft();
+                    player.MoveLeft(map.walls);
                 }
 
                 if (args.KeyCode == Keys.D)
                 {
-                    player.MoveRigth();
+                    player.MoveRight(map.walls);
                 }
             };
         }

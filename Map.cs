@@ -18,10 +18,10 @@ namespace Game
             walls = new List<Wall>();
             var texture = "wall";
             walls.Add(new Wall(new Line(new Vector(500, 200), new Vector(500, 400)),texture));
-            walls.Add(new Wall(new Line(new Vector(600, 5), new Vector(600, 600)),texture));
-            walls.Add(new Wall(new Line(new Vector(600, 600), new Vector(5, 600)),texture));
-            walls.Add(new Wall(new Line(new Vector(5, 600), new Vector(5, 5)),texture));
-            walls.Add(new Wall(new Line(new Vector(5, 5), new Vector(600, 5)),texture));
+            walls.Add(new Wall(new Line(new Vector(600, 1), new Vector(600, 600)),texture));
+            walls.Add(new Wall(new Line(new Vector(600, 600), new Vector(1, 600)),texture));
+            walls.Add(new Wall(new Line(new Vector(1, 600), new Vector(1, 1)),texture));
+            walls.Add(new Wall(new Line(new Vector(1, 1), new Vector(600, 1)),texture));
             var random = new Random();
             for (var i = 0; i < 5; i++)
             {
