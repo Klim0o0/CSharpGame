@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows;
 
 namespace Game
@@ -8,49 +9,38 @@ namespace Game
     public class Map
     {
         readonly public List<Wall> walls;
-        public Player player;
-        public Tuple<Line,Wall>[] CastetReys;
+        readonly public List<Enemy> Enemys;
 
-        public Map(Player player)
+        public Map(List<Enemy> enemys, List<Wall> walls)
         {
-            this.player = player;
-            CastetReys = new Tuple<Line,Wall>[player.Rays.Count];
-            walls = new List<Wall>();
-            var texture = "wall";
-            walls.Add(new Wall(new Line(new Vector(500, 200), new Vector(500, 400)),texture));
-            walls.Add(new Wall(new Line(new Vector(600, 1), new Vector(600, 600)),texture));
-            walls.Add(new Wall(new Line(new Vector(600, 600), new Vector(1, 600)),texture));
-            walls.Add(new Wall(new Line(new Vector(1, 600), new Vector(1, 1)),texture));
-            walls.Add(new Wall(new Line(new Vector(1, 1), new Vector(600, 1)),texture));
-            var random = new Random();
-            for (var i = 0; i < 5; i++)
-            {
-                walls.Add(new Wall(new Line(new Vector(random.Next(5, 600), random.Next(5, 600)), new Vector(random.Next(5, 600), random.Next(5, 600))),texture));
-            }
+            Enemys = enemys;
+            this.walls = new List<Wall>();
+            CreateMap();
+            this.walls = this.walls.Concat(walls).ToList();
         }
 
-        public void CastRays()
+        public Map(List<Enemy> enemys)
         {
-            for(var i =0;i<player.Rays.Count;i++)
-            {
-                var midDist = double.MaxValue;
-                var bestPoint = new Vector();
-                var bestWall = new Wall();
-                var ray = player.Rays[i];
-                foreach (var wall in walls)
-                {
-                    var currentPoint = ray.Cast(wall);
-                    if (!(currentPoint.X > 0) || !(currentPoint.Y > 0) || !(Utils.GetDist(currentPoint, ray.Pos) < midDist))
-                    {
-                        continue;
-                    }
+            Enemys = enemys;
+            this.walls = new List<Wall>();
+            CreateMap();
+        }
 
-                    midDist = Utils.GetDist(currentPoint, ray.Pos);
-                    bestPoint = currentPoint;
-                    bestWall = wall;
-                }
-                
-                CastetReys[i] = Tuple.Create(new Line(new Vector(ray.Pos.X, ray.Pos.Y), new Vector(bestPoint.X, bestPoint.Y)),bestWall);
+        private void CreateMap()
+        {
+            var texture = "wall";
+            this.walls.Add(new Wall(new Line(new Vector(500, 200), new Vector(500, 400)), texture));
+            this.walls.Add(new Wall(new Line(new Vector(600, 1), new Vector(600, 600)), texture));
+            this.walls.Add(new Wall(new Line(new Vector(600, 600), new Vector(1, 600)), texture));
+            this.walls.Add(new Wall(new Line(new Vector(1, 600), new Vector(1, 1)), texture));
+            this.walls.Add(new Wall(new Line(new Vector(1, 1), new Vector(600, 1)), texture));
+        }
+
+        public void MoveEnemy()
+        {
+            foreach (var enemy in Enemys)
+            {
+                enemy.Move();
             }
         }
     }
