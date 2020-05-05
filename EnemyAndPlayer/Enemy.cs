@@ -10,7 +10,8 @@ namespace Game.EnemyAndPlayer
         public double Direction { get; private set; }
         public List<Wall> EnemyWalls { get; private set; }
 
-        private readonly int a = 64;
+        private readonly int a = 32;
+        private readonly int speed = 1;
 
         public Enemy(Vector pos)
         {
@@ -25,12 +26,13 @@ namespace Game.EnemyAndPlayer
             };
         }
 
-        public void Move()
+        public void Move(Vector dir)
         {
+            Position += dir*speed;
             foreach (var t in EnemyWalls)
             {
-                t.line.A += new Vector(-1, -1);
-                t.line.B += new Vector(-1, -1);
+                t.line.A += dir*speed;
+                t.line.B += dir*speed;
             }
         }
     }

@@ -14,6 +14,7 @@ namespace Game
         private readonly Map _map;
         public List<Tuple<Line, Wall>>[] CastedRays { get; }
         public Vector PlayerPos => new Vector(_player.X, _player.Y);
+        public double PlayerDirection => _player.Direction;
 
         public Game(Map map, Player player)
         {
@@ -21,7 +22,6 @@ namespace Game
             _player = player;
             CastedRays = new List<Tuple<Line, Wall>>[_player.Rays.Count];
         }
-
 
         private Vector CorrectVector(Vector moveVector)
         {
@@ -72,10 +72,22 @@ namespace Game
                     var currentPoint = ray.Cast(wall);
                     if (currentPoint.X > 0 && currentPoint.Y > 0)
                         CastedRays[i].Add(Tuple.Create(
-                            new Line(new Vector(ray.Pos.X, ray.Pos.Y), new Vector(currentPoint.X, currentPoint.Y)),
-                            wall));
+                                              new Line(new Vector(ray.Pos.X, ray.Pos.Y), new Vector(currentPoint.X, currentPoint.Y)),
+                                              wall));
                 }
+
                 CastedRays[i] = CastedRays[i].OrderBy(x => -Utils.GetDist(x.Item1.B, ray.Pos)).ToList();
+            }
+        }
+
+        public void MoveEnemys()
+        {
+            var playerPos = new Vector(_player.X, _player.Y);
+            foreach (var enemy in _map.Enemies)
+            {
+                var vec = playerPos - enemy.Position;
+                vec.Normalize();
+                enemy.Move(vec);
             }
         }
     }

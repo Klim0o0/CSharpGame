@@ -32,7 +32,7 @@ namespace Game
 
             ClientSize = new Size(1900, 1200);
             var player = new Player(10, 10, 0);
-            var map = new Map(enemies);
+            var map = new Map(enemies, Level.level[1]);
             var game = new Game(map, player);
             const int heights = 100;
             const int distance = 200;
@@ -40,7 +40,7 @@ namespace Game
             var timer = new Timer {Interval = 10};
             timer.Tick += delegate
             {
-                map.MoveEnemy();
+                game.MoveEnemys();
                 Invalidate();
             };
             timer.Start();
@@ -138,22 +138,21 @@ namespace Game
             var offset = 0;
             foreach (var tuples in game.CastedRays)
             {
-                foreach (var (ray, item2) in tuples)
+                foreach (var (ray, wall) in tuples)
                 {
                     if (ray.B.X > 0 && ray.B.Y > 0)
                     {
-                        var bmp = textures[item2.Name];
+                        var bmp = textures[wall.Name];
                         var d1 = ray.Length;
-                        var h1 = distance / d1 * heights;
+                        var h1 = distance/ d1 * heights;
                         var width = bmp.Width;
                         var height = bmp.Height;
                         args.Graphics.DrawImage(
-                            bmp, new RectangleF(700 + offset, 300 - (float) h1 / 2, 4, (float) h1),
-                            new RectangleF((int) Utils.GetDist(item2.line.A, ray.B) % (width - 1), 0, 2, height),
+                            bmp, new RectangleF(700 + offset, 300 - (float) h1 / 2, 3, (float) h1),
+                            new RectangleF((int) Utils.GetDist(wall.line.A, ray.B) % (width - 1), 0, 2, height),
                             GraphicsUnit.Pixel);
                     }
                 }
-
                 offset += 2;
             }
 

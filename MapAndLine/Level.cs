@@ -3,11 +3,11 @@ using System.Windows;
 
 namespace Game.MapAndLine
 {
-    public class Level
+    public static  class Level
     {
         static string texture = "wall";
 
-        public Dictionary<int, List<Wall>> level = new Dictionary<int, List<Wall>>
+        public static Dictionary<int, List<Wall>> level = new Dictionary<int, List<Wall>>
         {
             [1] = new List<Wall>()
             {
