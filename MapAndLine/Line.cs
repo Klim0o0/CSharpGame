@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
-namespace Game
+namespace Game.MapAndLine
 {
     public class Line
     {
         public Vector A { get; set; }
         public Vector B { get; set; }
-
         public double Length { get; }
 
         public Line(Vector a, Vector b)

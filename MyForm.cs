@@ -6,160 +6,171 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using Game.EnemyAndPlayer;
+using Game.MapAndLine;
 using Point = System.Drawing.Point;
 using Size = System.Drawing.Size;
 
 namespace Game
 {
-    class MyForm : Form
+    sealed class MyForm : Form
     {
-        List<Ray> rays = new List<Ray>();
-
         public MyForm()
         {
             DoubleBuffered = true;
             Cursor.Hide();
-            var enem = new List<Enemy>();
-            enem.Add(new Enemy(new Vector(400, 400)));
+            var enemies = new List<Enemy> {new Enemy(new Vector(400, 400))};
             Cursor.Position = new Point((int) (Math.PI * 100 + 700), 300);
 
-            var textures = new Dictionary<string, Bitmap>();
-            textures.Add("wall", new Bitmap(Image.FromFile("wall.png")));
-            textures.Add("Enemy1Front", new Bitmap(Image.FromFile("wwq.png")));
-            textures.Add("Enemy1Beak", new Bitmap(Image.FromFile("wwq.png")));
-            textures.Add("Enemy1Side", new Bitmap(Image.FromFile("wwq.png")));
+            var textures = new Dictionary<string, Bitmap>
+            {
+                {"wall", new Bitmap(Image.FromFile("wall.png"))},
+                {"Enemy1Front", new Bitmap(Image.FromFile("matr.png"))},
+                {"Enemy1Beak", new Bitmap(Image.FromFile("matr.png"))},
+                {"Enemy1Side", new Bitmap(Image.FromFile("matr.png"))}
+            };
 
             ClientSize = new Size(1900, 1200);
-            var player = new Player(7, 7, 0);
-            var map = new Map(enem);
-            var game = new Game(map);
-            var centerX = ClientSize.Width / 2;
-            var centerY = ClientSize.Height / 2;
-            var h = 100;
-            var d = 200;
-            Paint += (sender, args) =>
-            {
-                args.Graphics.FillRectangle(Brushes.White, 0, 0, ClientSize.Width, ClientSize.Height);
-                args.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                game.CastRays();
-                foreach (var tuple in game.CastetReys)
-                {
-                    if (tuple.Count == 0)
-                        continue;
-                    var ray = tuple.Last().Item1;
-                    if (ray.B.X > 0 && ray.B.Y > 0)
-                        args.Graphics.DrawLine(Pens.Blue, (float) ray.A.X, (float) ray.A.Y, (float) ray.B.X, (float) ray.B.Y);
-                }
-
-                args.Graphics.FillRectangle(Brushes.CornflowerBlue, 700, 0, (float) Math.PI * 201, 300);
-                args.Graphics.FillRectangle(Brushes.Gray, 700, 300, (float) Math.PI * 201, 300);
-
-                var ofset = 0;
-                var angle = -Math.PI / 4;
-                foreach (var tuples in game.CastetReys)
-                {
-                    foreach (var (ray, item2) in tuples)
-                    {
-                        if (ray.B.X > 0 && ray.B.Y > 0)
-                        {
-                            var bmp = textures[item2.Name];
-                            var d1 = ray.Length;
-                            var h1 = d / d1 * h;
-                            //h1 = h1 % 8000;
-                            var width = bmp.Width;
-                            var height = bmp.Height;
-                            var destinationRect = new RectangleF(
-                                700 + ofset,
-                                300 - (float) h1 / 2,
-                                4,
-                                (float) h1);
-
-                            var sourceRect = new RectangleF((int) Utils.GetDist(item2.line.A, ray.B) % (width - 1), 0, 2, height);
-
-                            args.Graphics.DrawImage(
-                                bmp,
-                                destinationRect,
-                                sourceRect,
-                                GraphicsUnit.Pixel);
-                            //var rec = new RectangleF(0+ofset,0, 0.4f*bmp.Width,0.4f*bmp.Height);
-
-                            //args.Graphics.DrawImage(bmp, 700 + ofset, 300 - (float) h1 / 2,rec , GraphicsUnit.Pixel);
-                            //args.Graphics.FillRectangle(Brushes.WhiteSmoke, 700 + ofset, 300 - (float) h1 / 2, 2.5f, (float) h1);
-                        }
-                    }
-
-                    ofset += 2;
-                    angle += Player.RayStep;
-                }
-
-                args.Graphics.FillRectangle(Brushes.White, 699, 600, (float) Math.PI * 201, 800);
-                foreach (var wall in map.walls)
-                {
-                    args.Graphics.DrawLine(Pens.Blue, (float) wall.line.A.X, (float) wall.line.A.Y, (float) wall.line.B.X, (float) wall.line.B.Y);
-                }
-
-                args.Graphics.FillEllipse(Brushes.Aqua, new Rectangle((int) game.PlayerPos.X - 5, (int) game.PlayerPos.Y - 5, 10, 10));
-
-                var centrx = 699 + ((float) Math.PI * 201) / 2;
-                var centry = 300;
-
-                args.Graphics.FillRectangle(Brushes.GreenYellow, centrx - 1, centry - 1, 2, 2);
-            };
-            var timer = new Timer();
-            timer.Interval = 10;
-            timer.Tick += (sender, args) =>
+            var player = new Player(10, 10, 0);
+            var map = new Map(enemies);
+            var game = new Game(map, player);
+            const int heights = 100;
+            const int distance = 200;
+            DrawGame(game, textures, distance, heights, map);
+            var timer = new Timer {Interval = 10};
+            timer.Tick += delegate
             {
                 map.MoveEnemy();
                 Invalidate();
             };
             timer.Start();
+            MouseAction(game);
+            KeyAction(game, player);
+        }
 
-            var a = (int) (Math.PI * 100 + 700);
+        private void MouseAction(Game game)
+        {
             MouseMove += (sender, args) =>
             {
-                var g = a - args.X;
-                if (Math.Abs(g) > 20)
+                var mousePosition = (int) (Math.PI * 100 + 700) - args.X;
+                if (Math.Abs(mousePosition) > 20)
                 {
-                    if (g < 0)
-                        game.TurnRight();
-                    else
-                        game.TurnLeft();
+                    game.TurnIn(mousePosition < 0 ? -0.05 : 0.05);
                     Cursor.Position = new Point((int) (Math.PI * 100 + 700), 300);
                 }
             };
+        }
 
+        private void DrawGame(Game game, Dictionary<string, Bitmap> textures, int distance, int heights, Map map)
+        {
+            Paint += (sender, args) =>
+            {
+                args.Graphics.FillRectangle(Brushes.White, 0, 0, ClientSize.Width, ClientSize.Height);
+                args.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                game.CastRays();
+                DrawRays(game, args);
+
+                DrawPlayerView(args, game, textures, distance, heights);
+                DrawRayScreenWall(map, args);
+
+                args.Graphics.FillEllipse(Brushes.Aqua,
+                    new Rectangle((int) game.PlayerPos.X - 5, (int) game.PlayerPos.Y - 5, 10, 10));
+
+                DrawAim(args);
+            };
+        }
+
+        private void KeyAction(Game game, Player player)
+        {
             KeyDown += (sender, args) =>
             {
-                if (args.KeyCode == Keys.Right)
+                switch (args.KeyCode)
                 {
-                    game.TurnRight();
-                }
-
-                if (args.KeyCode == Keys.Left)
-                {
-                    game.TurnLeft();
-                }
-
-                if (args.KeyCode == Keys.W)
-                {
-                    game.MoveForward();
-                }
-
-                if (args.KeyCode == Keys.S)
-                {
-                    game.MoveBeak();
-                }
-
-                if (args.KeyCode == Keys.A)
-                {
-                    game.MoveLeft();
-                }
-
-                if (args.KeyCode == Keys.D)
-                {
-                    game.MoveRight();
+                    case Keys.Right:
+                        game.TurnIn(-0.05);
+                        break;
+                    case Keys.Left:
+                        game.TurnIn((0.05));
+                        break;
+                    case Keys.W:
+                        game.MoveTo(new Vector(Math.Cos(player.Direction),
+                            -Math.Sin(player.Direction)) * player.Speed);
+                        break;
+                    case Keys.S:
+                        game.MoveTo(new Vector(-Math.Cos(player.Direction),
+                            Math.Sin(player.Direction)) * player.Speed);
+                        break;
+                    case Keys.A:
+                        game.MoveTo(new Vector(Math.Cos(player.Direction + Math.PI / 2),
+                            -Math.Sin(player.Direction + Math.PI / 2)) * player.Speed);
+                        break;
+                    case Keys.D:
+                        game.MoveTo(new Vector(-Math.Cos(player.Direction + Math.PI / 2),
+                            Math.Sin(player.Direction + Math.PI / 2)) * player.Speed);
+                        break;
                 }
             };
+        }
+
+        private static void DrawAim(PaintEventArgs args)
+        {
+            const float centreX = 699 + ((float) Math.PI * 201) / 2;
+            const int centre = 300;
+
+            args.Graphics.FillRectangle(Brushes.GreenYellow, centreX - 1, centre - 1, 2, 2);
+        }
+
+        private static void DrawRayScreenWall(Map map, PaintEventArgs args)
+        {
+            foreach (var wall in map.Walls)
+            {
+                args.Graphics.DrawLine(Pens.Blue, (float) wall.line.A.X, (float) wall.line.A.Y,
+                    (float) wall.line.B.X, (float) wall.line.B.Y);
+            }
+        }
+
+        private static void DrawPlayerView(PaintEventArgs args, Game game, Dictionary<string, Bitmap> textures,
+            int distance, int heights)
+        {
+            args.Graphics.FillRectangle(Brushes.CornflowerBlue, 700, 0, (float) Math.PI * 201, 300);
+            args.Graphics.FillRectangle(Brushes.Gray, 700, 300, (float) Math.PI * 201, 300);
+
+            var offset = 0;
+            foreach (var tuples in game.CastedRays)
+            {
+                foreach (var (ray, item2) in tuples)
+                {
+                    if (ray.B.X > 0 && ray.B.Y > 0)
+                    {
+                        var bmp = textures[item2.Name];
+                        var d1 = ray.Length;
+                        var h1 = distance / d1 * heights;
+                        var width = bmp.Width;
+                        var height = bmp.Height;
+                        args.Graphics.DrawImage(
+                            bmp, new RectangleF(700 + offset, 300 - (float) h1 / 2, 4, (float) h1),
+                            new RectangleF((int) Utils.GetDist(item2.line.A, ray.B) % (width - 1), 0, 2, height),
+                            GraphicsUnit.Pixel);
+                    }
+                }
+
+                offset += 2;
+            }
+
+            args.Graphics.FillRectangle(Brushes.White, 699, 600, (float) Math.PI * 201, 800);
+        }
+
+        private static void DrawRays(Game game, PaintEventArgs args)
+        {
+            foreach (var tuple in game.CastedRays)
+            {
+                if (tuple.Count == 0)
+                    continue;
+                var ray = tuple.Last().Item1;
+                if (ray.B.X > 0 && ray.B.Y > 0)
+                    args.Graphics.DrawLine(Pens.Blue, (float) ray.A.X, (float) ray.A.Y, (float) ray.B.X,
+                        (float) ray.B.Y);
+            }
         }
     }
 }

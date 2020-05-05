@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Game.MapAndLine;
 
-namespace Game
+namespace Game.EnemyAndPlayer
 {
     public class Player
     {
@@ -13,7 +14,7 @@ namespace Game
         public float Y { get; set; }
         public const double RayStep = 0.005;
         public readonly int Speed = 3;
-        private readonly double vsize = Math.PI / 4;
+        private readonly double RaysAreaSize = Math.PI / 4;
         public List<Ray> Rays { get; private set; }
         public double Direction { get; private set; }
 
@@ -23,16 +24,14 @@ namespace Game
             Y = y;
             Direction = direction;
             Rays = new List<Ray>();
-            for (var i = Direction + vsize; i >= Direction - vsize; i -= RayStep)
-            {
+            for (var i = Direction + RaysAreaSize; i >= Direction - RaysAreaSize; i -= RayStep)
                 Rays.Add(new Ray(new Vector(x, y), i));
-            }
         }
 
-        public void Move(Vector m)
+        public void Move(Vector moveVector)
         {
-            X += (float) m.X;
-            Y += (float) m.Y;
+            X += (float) moveVector.X;
+            Y += (float) moveVector.Y;
             foreach (var ray in Rays)
                 ray.Pos = new Vector(X, Y);
         }
@@ -46,9 +45,7 @@ namespace Game
         private void ChangeRays()
         {
             for (double i = 0, j = Direction + Math.PI / 4; i < Rays.Count; i++, j -= RayStep)
-            {
                 Rays[(int) i].Direction = new Vector(Math.Cos(j), -Math.Sin(j));
-            }
         }
     }
 }

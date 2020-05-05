@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using Point = System.Drawing.Point;
+using Game.MapAndLine;
 
-namespace Game
+namespace Game.EnemyAndPlayer
 {
     public class Enemy
     {
         public Vector Position { get; private set; }
         public double Direction { get; private set; }
-        public List<Wall> w { get; private set; }
+        public List<Wall> EnemyWalls { get; private set; }
 
-        private readonly int a = 20;
+        private readonly int a = 64;
 
         public Enemy(Vector pos)
         {
             Direction = 0;
             Position = pos;
-            w = new List<Wall>
+            EnemyWalls = new List<Wall>
             {
                 new Wall(new Line(new Vector(pos.X - a, pos.Y - 1), new Vector(pos.X + a, pos.Y - 1)), "Enemy1Front"),
                 new Wall(new Line(new Vector(pos.X - a, pos.Y + 1), new Vector(pos.X + a, pos.Y + 1)), "Enemy1Beak"),
@@ -27,10 +27,10 @@ namespace Game
 
         public void Move()
         {
-            for (var i = 0; i < w.Count; i++)
+            foreach (var t in EnemyWalls)
             {
-                w[i].line.A += new Vector(-1, -1);
-                w[i].line.B += new Vector(-1, -1);
+                t.line.A += new Vector(-1, -1);
+                t.line.B += new Vector(-1, -1);
             }
         }
     }

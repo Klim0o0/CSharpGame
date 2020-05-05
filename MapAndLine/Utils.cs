@@ -1,7 +1,7 @@
 using System;
 using System.Windows;
 
-namespace Game
+namespace Game.MapAndLine
 {
     public static class Utils
     {
