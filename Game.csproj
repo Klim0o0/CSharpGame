@@ -61,6 +61,7 @@
     <Compile Include="MapAndLine\Ray.cs" />
     <Compile Include="MapAndLine\Utils.cs" />
     <Compile Include="MapAndLine\Wall.cs" />
+    <Compile Include="Menu.cs" />
     <Compile Include="MyForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -12,7 +12,6 @@ namespace Game.MapAndLine
     {
         public readonly List<Wall> Walls;
         public readonly List<Enemy> Enemies;
-
         public Map(List<Enemy> enemies, List<Wall> walls)
         {
             Enemies = enemies;
