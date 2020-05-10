@@ -12,9 +12,9 @@ namespace Game
             buttonStart.Location = new Point(1, 1);
             buttonStart.Click += (sender, args) =>
             {
-                this.Hide();
                 var w = new MyForm();
                 w.Show();
+                this.Hide();
             };
             this.Controls.Add(buttonStart);
         }

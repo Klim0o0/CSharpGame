@@ -16,6 +16,7 @@ namespace Game
     sealed class MyForm : Form
     {
         private static float mast = 10;
+        private static float m = 2;
         public MyForm()
         {
             DoubleBuffered = true;
@@ -30,8 +31,7 @@ namespace Game
                 {"Enemy1Beak", new Bitmap(Image.FromFile("wall.png"))},
                 {"Enemy1Side", new Bitmap(Image.FromFile("matr.png"))}
             };
-
-            ClientSize = new Size(1900, 1200);
+            ClientSize = new Size(950, 1000);
             var player = new Player(20, 20, 0.04);
             var map = new Map(enemies, Level.level[1]);
             var game = new Game(map, player);
@@ -48,17 +48,18 @@ namespace Game
             timer.Start();
             MouseAction(game);
             KeyAction(game, player);
+            
         }
 
         private void MouseAction(Game game)
         {
             MouseMove += (sender, args) =>
             {
-                var mousePosition = (int) (Math.PI * 100) - args.X;
-                if (Math.Abs(mousePosition) > 20)
+                var mousePosition = 950/2 - args.X;
+                if (Math.Abs(mousePosition) > 60)
                 {
                     game.TurnIn(mousePosition < 0 ? -0.05 : 0.05);
-                    Cursor.Position = new Point((int) (Math.PI * 100), 300);
+                    Cursor.Position = new Point(950/2+400, 500);
                 }
             };
 
@@ -69,6 +70,7 @@ namespace Game
         {
             Paint += (sender, args) =>
             {
+                Location = new Point(400,0);
                 args.Graphics.FillRectangle(Brushes.White, 0, 0, ClientSize.Width, ClientSize.Height);
                 args.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                 game.CastRays();
@@ -133,8 +135,8 @@ namespace Game
 
         private static void DrawAim(PaintEventArgs args)
         {
-            const float centreX =((float) Math.PI * 201) / 2;
-            const int centre = 300;
+            const float centreX =950 / 2;
+            const int centre = 500;
 
             args.Graphics.FillRectangle(Brushes.GreenYellow, centreX - 1, centre - 1, 2, 2);
         }
@@ -151,8 +153,8 @@ namespace Game
         private static void DrawPlayerView(PaintEventArgs args, Game game, Dictionary<string, Bitmap> textures,
             int distance, int heights)
         {
-            args.Graphics.FillRectangle(Brushes.CornflowerBlue, 0, 0, (float) Math.PI * 201, 300);
-            args.Graphics.FillRectangle(Brushes.Gray, 0, 300, (float) Math.PI * 201, 300);
+            args.Graphics.FillRectangle(Brushes.CornflowerBlue, 0, 0, 1000/ game.CastedRays.Length * game.CastedRays.Length+10, 500);
+            args.Graphics.FillRectangle(Brushes.Gray, 0, 500, 1000/ game.CastedRays.Length * game.CastedRays.Length+10, 500);
 
             var offset = 0;
             foreach (var tuples in game.CastedRays)
@@ -163,19 +165,19 @@ namespace Game
                     {
                         var bmp = textures[wall.Name];
                         var d1 = ray.Length;
-                        var h1 = distance/ d1 * heights;
+                        var h1 = (distance/d1 * heights)*2;
                         var width = bmp.Width;
                         var height = bmp.Height;
                         args.Graphics.DrawImage(
-                            bmp, new RectangleF(0 + offset, 300 - (float) h1 / 2, 3, (float) h1),
-                            new RectangleF((int) Utils.GetDist(wall.line.A, ray.B) % (width - 1), 0, 2, height),
+                            bmp, new RectangleF(0 + offset, 500 - (float) h1 / 2, 6, (float) h1),
+                            new RectangleF((int) Utils.GetDist(wall.line.A, ray.B) % (width - 1), 0, 1 , height),
                             GraphicsUnit.Pixel);
                     }
                 }
-                offset += 2;
+                offset +=1000/ game.CastedRays.Length;
             }
 
-            args.Graphics.FillRectangle(Brushes.White, 0, 600, (float) Math.PI * 201, 800);
+            //args.Graphics.FillRectangle(Brushes.White, 0, 600, (float) Math.PI * 201, 800);
         }
 
         private static void DrawRays(Game game, PaintEventArgs args)
