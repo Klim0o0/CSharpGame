@@ -8,3 +8,9 @@ D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\Game.pdb
 D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.exe
 D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.pdb
 D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.MyForm.resources
+D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\matr.png
+D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\wall.png
+D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\nunit.framework.dll
+D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\nunit.framework.pdb
+D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\nunit.framework.xml
+D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.csproj.CopyComplete

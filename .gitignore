@@ -1,6 +1,3 @@
 .idea
 bin
 obj
-App.config
-packages.config
-Game.csproj.DotSettings
