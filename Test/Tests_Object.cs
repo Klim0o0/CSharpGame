@@ -12,7 +12,7 @@ namespace Game.Test
     {
         static Player testPlayer = new Player(10, 10, 0);
         static List<Enemy> enemies = new List<Enemy> {new Enemy(new Vector(400, 400))};
-        static Map map = new Map(enemies, Level.level[1]);
+        static Map map = new Map(Levels.level[1]);
         Game game = new Game(map, testPlayer);
 
         [Test]

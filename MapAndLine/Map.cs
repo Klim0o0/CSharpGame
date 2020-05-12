@@ -11,11 +11,13 @@ namespace Game.MapAndLine
     public class Map
     {
         public readonly List<Wall> Walls;
-        public readonly List<Enemy> Enemies;
-        public Map(List<Enemy> enemies, List<Wall> walls)
+        public readonly HashSet<Enemy> Enemies;
+        public readonly HashSet<Door> Doors;
+        public Map(Level level)
         {
-            Enemies = enemies;
-            Walls = walls;
+            Enemies = level.Enemies;
+            Walls = level.Walls;
+            Doors = level.Doors;
         }
     }
 }

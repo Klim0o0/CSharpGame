@@ -14,3 +14,4 @@ D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\nunit.framework.dll
 D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\nunit.framework.pdb
 D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\nunit.framework.xml
 D:\ЯТП\2 семестр\игра\Game\Game\obj\Debug\Game.csproj.CopyComplete
+D:\ЯТП\2 семестр\игра\Game\Game\bin\Debug\Door.png

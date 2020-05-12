@@ -15,25 +15,24 @@ namespace Game
 {
     sealed class MyForm : Form
     {
-        private static float mast = 10;
-        private static float m = 2;
         public MyForm()
         {
             DoubleBuffered = true;
             Cursor.Hide();
-            var enemies = new List<Enemy> {new Enemy(new Vector(400, 400))};
             Cursor.Position = new Point((int) (Math.PI * 100), 300);
 
             var textures = new Dictionary<string, Bitmap>
             {
                 {"wall", new Bitmap(Image.FromFile("wall.png"))},
                 {"Enemy1Front", new Bitmap(Image.FromFile("matr.png"))},
-                {"Enemy1Beak", new Bitmap(Image.FromFile("wall.png"))},
-                {"Enemy1Side", new Bitmap(Image.FromFile("matr.png"))}
+                {"Enemy1Beak", new Bitmap(Image.FromFile("matr.png"))},
+                {"Enemy1Side", new Bitmap(Image.FromFile("matr.png"))},
+                {"Door", new Bitmap(Image.FromFile("Door.png"))}
+                
             };
             ClientSize = new Size(950, 1000);
             var player = new Player(20, 20, 0.04);
-            var map = new Map(enemies, Level.level[1]);
+            var map = new Map(Levels.level[1]);
             var game = new Game(map, player);
             const int heights = 100;
             const int distance = 200;
@@ -75,15 +74,11 @@ namespace Game
                 args.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                 game.CastRays();
                 
-                DrawPlayerView(args, game, textures, distance, heights);
-                DrawRays(game, args);
-
-                DrawRayScreenWall(map, args);
-
-                args.Graphics.FillEllipse(Brushes.Aqua,
-                    new Rectangle((int) (game.PlayerPos.X/mast )- 2, (int) (game.PlayerPos.Y/mast )- 2, 4, 4));
-
-                DrawAim(args);
+                Drawer.DrawPlayerView(args, game, textures, distance, heights);
+                Drawer.DrawRays(game, args);
+                Drawer.DrawRayScreenWall(map, args);
+                Drawer.DrawPlayer(map,args,game.PlayerPos);
+                Drawer.DrawAim(args);
             };
         }
 
@@ -98,6 +93,9 @@ namespace Game
                         break;
                     case Keys.Left:
                         game.TurnIn((0.05));
+                        break;
+                    case Keys.E:
+                        game.OpenDor();
                         break;
                     case Keys.W:
                         game.directions.Add(0);
@@ -131,66 +129,6 @@ namespace Game
                         break;
                 }
             };
-        }
-
-        private static void DrawAim(PaintEventArgs args)
-        {
-            const float centreX =950 / 2;
-            const int centre = 500;
-
-            args.Graphics.FillRectangle(Brushes.GreenYellow, centreX - 1, centre - 1, 2, 2);
-        }
-
-        private static void DrawRayScreenWall(Map map, PaintEventArgs args)
-        {
-            foreach (var wall in map.Walls)
-            {
-                args.Graphics.DrawLine(Pens.Blue, (float) wall.line.A.X/mast, (float) wall.line.A.Y/mast,
-                    (float) wall.line.B.X/mast, (float) wall.line.B.Y/mast);
-            }
-        }
-
-        private static void DrawPlayerView(PaintEventArgs args, Game game, Dictionary<string, Bitmap> textures,
-            int distance, int heights)
-        {
-            args.Graphics.FillRectangle(Brushes.CornflowerBlue, 0, 0, 1000/ game.CastedRays.Length * game.CastedRays.Length+10, 500);
-            args.Graphics.FillRectangle(Brushes.Gray, 0, 500, 1000/ game.CastedRays.Length * game.CastedRays.Length+10, 500);
-
-            var offset = 0;
-            foreach (var tuples in game.CastedRays)
-            {
-                foreach (var (ray, wall) in tuples)
-                {
-                    if (ray.B.X > 0 && ray.B.Y > 0)
-                    {
-                        var bmp = textures[wall.Name];
-                        var d1 = ray.Length;
-                        var h1 = (distance/d1 * heights)*2;
-                        var width = bmp.Width;
-                        var height = bmp.Height;
-                        args.Graphics.DrawImage(
-                            bmp, new RectangleF(0 + offset, 500 - (float) h1 / 2, 6, (float) h1),
-                            new RectangleF((int) Utils.GetDist(wall.line.A, ray.B) % (width - 1), 0, 1 , height),
-                            GraphicsUnit.Pixel);
-                    }
-                }
-                offset +=1000/ game.CastedRays.Length;
-            }
-
-            //args.Graphics.FillRectangle(Brushes.White, 0, 600, (float) Math.PI * 201, 800);
-        }
-
-        private static void DrawRays(Game game, PaintEventArgs args)
-        {
-            foreach (var tuple in game.CastedRays)
-            {
-                if (tuple.Count == 0)
-                    continue;
-                var ray = tuple.Last().Item1;
-                if (ray.B.X > 0 && ray.B.Y > 0)
-                    args.Graphics.DrawLine(Pens.Blue, (float) ray.A.X/mast, (float) ray.A.Y/mast, (float) ray.B.X/mast,
-                        (float) ray.B.Y/mast);
-            }
         }
     }
 }

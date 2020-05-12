@@ -28,7 +28,7 @@ namespace Game
 
         private Vector CorrectVector(Vector moveVector)
         {
-            foreach (var wall in _map.Walls)
+            foreach (var wall in _map.Walls.Concat(_map.Doors.Select(x=>x.DorWall)))
             {
                 var t = new Vector(moveVector.X, moveVector.Y);
                 t.Normalize();
@@ -71,7 +71,7 @@ namespace Game
             for (var i = 0; i < _player.Rays.Count; i++)
             {
                 var ray = _player.Rays[i];
-                foreach (var wall in _map.Walls.Concat(_map.Enemies.SelectMany(x => x.EnemyWalls)))
+                foreach (var wall in _map.Walls.Concat(_map.Enemies.SelectMany(x => x.EnemyWalls).Concat(_map.Doors.Select(z=>z.DorWall))))
                 {
                     var currentPoint = ray.Cast(wall);
                     if (currentPoint.X > 0 && currentPoint.Y > 0)
@@ -144,6 +144,18 @@ namespace Game
                 vec.Normalize();
 
                 MoveTo(vec * _player.Speed);
+            }
+        }
+
+        public void OpenDor()
+        {
+            foreach (var door in _map.Doors)
+            {
+                if ((PlayerPos - door.Position).Length<=50)
+                {
+                    _map.Doors.Remove(door);
+                    break;
+                }
             }
         }
     }
