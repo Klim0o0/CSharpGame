@@ -39,10 +39,10 @@ namespace Game.MapAndLine
                 },
                 Doors = new HashSet<Door>()
                 {
-                    new Door(new Vector( 55,700),1,Math.PI/2),
-                    new Door(new Vector( 750,1000),2,Math.PI/2),
-                    new Door(new Vector( 1500,850), 3,0),
-                    new Door(new Vector( 1750,900), 4,Math.PI/2),
+                    new Door(new Vector( 55,700),Math.PI/2),
+                    new Door(new Vector( 750,1000),Math.PI/2),
+                    new Door(new Vector( 1500,850), 0),
+                    new Door(new Vector( 1750,900), Math.PI/2),
                 }
             }
         };

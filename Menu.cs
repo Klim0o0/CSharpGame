@@ -13,10 +13,10 @@ namespace Game
             buttonStart.Click += (sender, args) =>
             {
                 var w = new MyForm();
-                w.Show();
-                this.Hide();
+                w.Show(); 
+                Close();
             };
-            this.Controls.Add(buttonStart);
+            Controls.Add(buttonStart);
         }
     }
 }

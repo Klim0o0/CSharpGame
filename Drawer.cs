@@ -12,10 +12,23 @@ namespace Game
     {
         private static float mast = 10;
         private static float m = 2;
+        
+        public static void DrawGame(PaintEventArgs args, Game game, Dictionary<string, Bitmap> textures, int distance, Map map)
+        {
+            args.Graphics.FillRectangle(Brushes.White, 0, 0, args.Graphics.DpiX, args.Graphics.DpiY); 
+            //args.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            game.CastRays();
+            DrawPlayerView(args, game, textures, distance);
+            DrawRays(game, args);
+            DrawRayScreenWall(map, args);
+            DrawPlayer(map, args, game.PlayerPos);
+            DrawAim(args);
+        }
 
         public static void DrawPlayerView(PaintEventArgs args, Game game, Dictionary<string, Bitmap> textures,
-                                          int distance, int heights)
+                                          int distance)
         {
+            var time1 = DateTime.Now;
             args.Graphics.FillRectangle(Brushes.CornflowerBlue, 0, 0, 1000 / game.CastedRays.Length * game.CastedRays.Length + 10, 500);
             args.Graphics.FillRectangle(Brushes.Gray, 0, 500, 1000 / game.CastedRays.Length * game.CastedRays.Length + 10, 500);
 
@@ -24,35 +37,32 @@ namespace Game
             {
                 foreach (var (ray, wall) in tuples)
                 {
-                    if (ray.B.X > 0 && ray.B.Y > 0)
-                    {
-                        var bmp = textures[wall.Name];
-                        var d1 = ray.Length;
-                        var h1 = (distance / d1 * heights) * 2;
-                        var width = bmp.Width;
-                        var height = bmp.Height;
-                        args.Graphics.DrawImage(
-                            bmp, new RectangleF(0 + offset, 500 - (float) h1 / 2, 6, (float) h1),
-                            new RectangleF((int) Utils.GetDist(wall.line.A, ray.B) % (width - 1), 0, 1, height),
-                            GraphicsUnit.Pixel);
-                    }
-                }
+                    if (!(ray.B.X > 0) || !(ray.B.Y > 0))
+                        continue;
 
+                    var bmp = textures[wall.Name];
+                    var h = (int) (distance / ray.Length);
+                    args.Graphics.DrawImage(
+                             bmp, new RectangleF(0 + offset, 500 -  h, 6,  h*2),
+                             new RectangleF((int) Utils.GetDist(wall.line.A, ray.B) % (bmp.Width - 1), 0, 1, bmp.Height),
+                             GraphicsUnit.Pixel);
+                }
                 offset += 1000 / game.CastedRays.Length;
             }
-
+            var time2 = DateTime.Now;
+            args.Graphics.DrawString("ticks on frame:"+time2.Subtract(time1).Ticks.ToString(), SystemFonts.MenuFont, Brushes.Black, 1200, 0);
             //args.Graphics.FillRectangle(Brushes.White, 0, 600, (float) Math.PI * 201, 800);
         }
 
-        public static void DrawAim(PaintEventArgs args)
+        private static void DrawAim(PaintEventArgs args)
         {
-            const float centreX = 950 / 2;
+            const float centreX = 475;
             const int centre = 500;
 
             args.Graphics.FillRectangle(Brushes.GreenYellow, centreX - 1, centre - 1, 2, 2);
         }
 
-        public static void DrawRayScreenWall(Map map, PaintEventArgs args)
+        private static void DrawRayScreenWall(Map map, PaintEventArgs args)
         {
             foreach (var wall in map.Walls.Concat(map.Doors.Select(x=>x.DorWall)))
             {
@@ -61,13 +71,13 @@ namespace Game
             }
         }
 
-        public static void DrawPlayer(Map map, PaintEventArgs args, Vector PlayerPos)
+        private static void DrawPlayer(Map map, PaintEventArgs args, Vector playerPos)
         {
             args.Graphics.FillEllipse(Brushes.Aqua,
-                                      new Rectangle((int) (PlayerPos.X / mast) - 2, (int) (PlayerPos.Y / mast) - 2, 4, 4));
+                                      new Rectangle((int) (playerPos.X / mast) - 2, (int) (playerPos.Y / mast) - 2, 4, 4));
         }
 
-        public static void DrawRays(Game game, PaintEventArgs args)
+        private static void DrawRays(Game game, PaintEventArgs args)
         {
             foreach (var tuple in game.CastedRays)
             {

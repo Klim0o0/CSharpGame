@@ -13,13 +13,12 @@ namespace Game.EnemyAndPlayer
         public int Health { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
-        public const double RayStep = 0.005;
-        public readonly int Speed = 6;
+        private const double RayStep = 0.005;
+        public const int Speed = 6;
         private readonly double RaysAreaSize = Math.PI / 4;
         public List<Ray> Rays { get; private set; }
         public double Direction { get; private set; }
-        public HashSet<int> Keys { get; private set; }
-        
+
 
         public Player(float x, float y, double direction)
         {
@@ -29,7 +28,6 @@ namespace Game.EnemyAndPlayer
             Rays = new List<Ray>();
             for (var i = Direction + RaysAreaSize; i >= Direction - RaysAreaSize; i -= RayStep)
                 Rays.Add(new Ray(new Vector(x, y), i));
-            Keys= new HashSet<int>();
         }
 
         public void Move(Vector moveVector)

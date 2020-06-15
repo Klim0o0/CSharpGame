@@ -55,7 +55,6 @@
     <Compile Include="Drawer.cs" />
     <Compile Include="EnemyAndPlayer\Door.cs" />
     <Compile Include="EnemyAndPlayer\Enemy.cs" />
-    <Compile Include="EnemyAndPlayer\Key.cs" />
     <Compile Include="EnemyAndPlayer\Player.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="MapAndLine\Level.cs" />
